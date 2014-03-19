@@ -15,6 +15,8 @@ public class Pearson {
 	
 	public class film {
 		private int id;
+		
+		private HashMap<user,Double> ratings;
 	}
 	
 	public class user {
@@ -29,6 +31,15 @@ public class Pearson {
 				sum += this.ratedFilms.get(f);
 			}
 			return sum/(double)this.ratedFilms.size();
+		}
+		
+		private double getPredictedRating(film f) {
+			double result = this.getMeanRating();
+			for (user u : f.ratings.keySet()) {
+				result += pearsonSimilarity(this, u)
+						*(u.ratedFilms.get(f) - u.getMeanRating());
+			}
+			return result;
 		}
 	}
 	
@@ -45,7 +56,7 @@ public class Pearson {
 		
 		for (film s : commonFilmSet(x,y)) {
 			numerator += (x.ratedFilms.get(s)-x.getMeanRating())
-				*(y.ratedFilms.get(s)-y.getMeanRating());
+					*(y.ratedFilms.get(s)-y.getMeanRating());
 			
 			xSum += Math.pow(x.ratedFilms.get(s)-x.getMeanRating(),2);
 			ySum += Math.pow(y.ratedFilms.get(s)-y.getMeanRating(),2);
