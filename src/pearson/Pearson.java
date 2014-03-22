@@ -1,71 +1,53 @@
 package pearson;
 
+import weka.core.Attribute;
 import weka.core.Instances;
-import weka.clusterers.*;
-import weka.clusterers.ClusterEvaluation;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
-
 public class Pearson {
 	
-	public class film {
-		private int id;
-		
-		private HashMap<user,Double> ratings;
-	}
+	public static int NUMBER_OF_USERS = 943;
+	public static int NUMBER_OF_FILMS = 1682;
 	
-	public class user {
-		
-		private int id;
-		
-		private HashMap<film,Double> ratedFilms;
-		
-		private double getMeanRating() {
-			double sum = 0;
-			for (film f : this.ratedFilms.keySet()) {
-				sum += this.ratedFilms.get(f);
+	public static User[] users = new User[NUMBER_OF_USERS+1];
+	public static Film[] films = new Film[NUMBER_OF_FILMS+1];
+	
+	public static void main(String[] args) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader("DataALL.arff"));
+			Instances data = new Instances(reader);
+			reader.close();
+			Attribute UserID = data.attribute("UserID");
+			Attribute ItemID = data.attribute("ItemID");
+			Attribute Rating = data.attribute("Rating");
+			for (int i = 0; i < data.size(); i++) {
+				System.out.println(i);
+				int userID = (int)data.get(i).value(UserID);
+				int filmID = (int)data.get(i).value(ItemID);
+				Double rating = data.get(i).value(Rating);
+				
+				User userInstance = users[userID];
+				if (userInstance == null) {
+					userInstance = new User(userID);
+				}
+				
+			Film filmInstance = films[filmID];
+				if (filmInstance == null) {
+					filmInstance = new Film(filmID);
+				}
+				
+				userInstance.ratedFilms.put(filmInstance, rating);
+				filmInstance.ratings.put(userInstance, rating);
+				users[userID] = userInstance;
+				films[filmID] = filmInstance;
 			}
-			return sum/(double)this.ratedFilms.size();
-		}
-		
-		private double getPredictedRating(film f) {
-			double result = this.getMeanRating();
-			for (user u : f.ratings.keySet()) {
-				result += pearsonSimilarity(this, u)
-						*(u.ratedFilms.get(f) - u.getMeanRating());
-			}
-			return result;
-		}
-	}
-	
-	public static Set<film> commonFilmSet(user x, user y) {
-		Set<film> result = new TreeSet<film>(x.ratedFilms.keySet());
-		result.retainAll(y.ratedFilms.keySet());
-		return result;
-	}
-	
-	public static double pearsonSimilarity (user x, user y) {
-		double numerator = 0;
-		double xSum = 0;
-		double ySum = 0;
-		
-		for (film s : commonFilmSet(x,y)) {
-			numerator += (x.ratedFilms.get(s)-x.getMeanRating())
-					*(y.ratedFilms.get(s)-y.getMeanRating());
 			
-			xSum += Math.pow(x.ratedFilms.get(s)-x.getMeanRating(),2);
-			ySum += Math.pow(y.ratedFilms.get(s)-y.getMeanRating(),2);
+			
 		}
-		
-		double denominator = Math.sqrt(xSum)*Math.sqrt(ySum);
-		if (denominator == 0) {
-			numerator = 0; // result is NaN
+		catch (Exception e1) {
+			e1.printStackTrace();
 		}
-		return numerator/denominator;
 	}
 }
