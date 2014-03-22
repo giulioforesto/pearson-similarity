@@ -7,7 +7,7 @@ public class Film {
 		this.id = filmID;
 	}
 
-	private int id;
+	public int id;
 	
-	public HashMap<User,Double> ratings = new HashMap<User,Double>();
+	public HashMap<User,Float> ratings = new HashMap<User,Float>();
 }

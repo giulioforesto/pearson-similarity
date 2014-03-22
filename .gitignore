@@ -10,4 +10,7 @@ ml-100k/
 *.xml
 *.war
 *.arff
+*.csv
+*.txt
 .metadata/
+src/test/

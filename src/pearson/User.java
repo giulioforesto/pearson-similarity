@@ -7,27 +7,43 @@ import pearson.Functions;
 
 public class User {
 	
-	private int id;
-	
-	public HashMap<Film,Double> ratedFilms = new HashMap<Film,Double>();
-	
 	public User(int value) {
 		this.id = value;
 	}
+	
+	private int id;
+	
+	public HashMap<Film,Float> ratedFilms = new HashMap<Film,Float>();
 
-	public double getMeanRating() {
-		double sum = 0;
+	public float meanRating = 0;
+	private int numberOfRatedFilms = 0;
+	
+	public void increaseMeanRating (float rating) {
+		meanRating *= numberOfRatedFilms;
+		meanRating += rating;
+		numberOfRatedFilms++;
+		meanRating /= (float)numberOfRatedFilms; 
+	}
+	
+	public float getMeanRating() {
+		float sum = 0;
 		for (Film f : this.ratedFilms.keySet()) {
 			sum += this.ratedFilms.get(f);
 		}
-		return sum/(double)this.ratedFilms.size();
+		return sum/(float)this.ratedFilms.size();
 	}
 	
-	private double getPredictedRating(Film f) {
-		double result = this.getMeanRating();
+	public float getPredictedRating(Film f) {
+		float result = this.meanRating;
 		for (User u : f.ratings.keySet()) {
-			result += Functions.pearsonSimilarity(this, u)
-					*(u.ratedFilms.get(f) - u.getMeanRating());
+			Pearson.tuple XY = new Pearson.tuple(this.id, u.id);
+			Float calcSim = Pearson.calculatedSim.get(XY);
+			
+			if (calcSim == null) {
+				calcSim = Functions.pearsonSimilarity(this, u);
+				Pearson.calculatedSim.put(XY,calcSim);
+			}
+			result += calcSim*(u.ratedFilms.get(f) - u.meanRating);
 		}
 		return result;
 	}

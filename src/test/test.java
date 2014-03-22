@@ -1,21 +1,16 @@
 package test;
 
+import weka.core.DistanceFunction;
 import weka.core.Instances;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashMap;
+
 import weka.clusterers.*;
 
-public class test {	
-	public static class user {
-		public user(int i) {
-			this.id = i;
-		}
-
-		public int id;
-	}
+public class test {
 	
-	static user[] array = new user[2];
 	public static void main(String[] args) {
 //		try {
 //			BufferedReader reader = new BufferedReader(new FileReader("DataALL.arff"));
@@ -29,6 +24,11 @@ public class test {
 //			clusterer.setOptions(options);
 //			clusterer.buildClusterer(data);
 //			
+////			DistanceFunction df = new DistanceFunction();
+//			
+//			SimpleKMeans SKMClusterer = new SimpleKMeans();
+////			SKMClusterer.setDistanceFunction(df);
+//			
 //			ClusterEvaluation eval = new ClusterEvaluation();
 //			eval.setClusterer(clusterer);
 //			eval.evaluateClusterer(data);
@@ -37,8 +37,10 @@ public class test {
 //			System.out.println(e1.getMessage());
 //		}
 		
-		user ciao = new test.user(1);
-		array[1] = ciao;
-		System.out.println(array[0]);
+		HashMap<Integer,Double> a = new HashMap<Integer,Double>();
+		Double b = a.get(2);
+		if (b == null) {
+			System.out.println(b);
+		}
 	}
 }
