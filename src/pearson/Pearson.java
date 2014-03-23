@@ -35,6 +35,8 @@ public class Pearson {
 			Rating = data.attribute("Rating");
 			size = data.size();
 			
+			long startTime = System.currentTimeMillis();
+			
 			Functions.calculateMeanRatings();
 			Functions.calculateSimilarities();
 			Functions.calculatePredictions();
@@ -47,6 +49,10 @@ public class Pearson {
 					}
 				}
 			}
+			output.println(
+					"Executed in: "
+					+ (System.currentTimeMillis()-startTime)/1000
+					+ " s");
 			output.close();
 		}
 		catch (Exception e) {
