@@ -13,4 +13,3 @@ ml-100k/
 *.csv
 *.txt
 .metadata/
-src/test/

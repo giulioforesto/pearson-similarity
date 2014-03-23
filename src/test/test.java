@@ -37,10 +37,7 @@ public class test {
 //			System.out.println(e1.getMessage());
 //		}
 		
-		HashMap<Integer,Double> a = new HashMap<Integer,Double>();
-		Double b = a.get(2);
-		if (b == null) {
-			System.out.println(b);
-		}
+		boolean[] ciao = new boolean[2];
+		System.out.println(ciao[1]);
 	}
 }

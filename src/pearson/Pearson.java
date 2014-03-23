@@ -6,79 +6,51 @@ import weka.core.Instances;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.HashMap;
 
-public class Pearson {
-	
-	public static class tuple {
-		private int x;
-		private int y;
-		
-		public tuple(int X, int Y) {
-			if (X <= Y) {
-				this.x = X;
-				this.y = Y;
-			} else {
-				this.x = Y;
-				this.y = X;
-			}
-		}
-	}
+public class Pearson {	
+	public static Instances data;
 	
 	public static int NUMBER_OF_USERS = 943;
 	public static int NUMBER_OF_FILMS = 1682;
 	
-	public static HashMap<Integer,User> users = new HashMap<Integer,User>();
-	public static HashMap<Integer,Film> films = new HashMap<Integer,Film>();
-	public static HashMap<tuple,Float> calculatedSim = new HashMap<tuple,Float>();
+	public static int size;
+	public static Attribute UserID;
+	public static Attribute ItemID;
+	public static Attribute Rating;
+	
+	public static float[] meanRatings = new float[NUMBER_OF_USERS+1];
+	public static int[] cardinals = new int[NUMBER_OF_USERS+1];
+	public static float[][] filmSets = new float[NUMBER_OF_FILMS+1][NUMBER_OF_USERS+1];
+	public static float[][] similarities = new float[NUMBER_OF_USERS+1][NUMBER_OF_USERS+1];
+	public static float[][] simDenominator = new float[NUMBER_OF_USERS+1][NUMBER_OF_USERS+1];
+	public static float[][] predictions = new float[NUMBER_OF_USERS+1][NUMBER_OF_FILMS+1];
 	
 	public static void main(String[] args) {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader("DataALL.arff"));
-			Instances data = new Instances(reader);
+			data = new Instances(reader);
 			reader.close();
-			Attribute UserID = data.attribute("UserID");
-			Attribute ItemID = data.attribute("ItemID");
-			Attribute Rating = data.attribute("Rating");
-			for (int i = 0; i < data.size(); i++) {
-				int userID = (int)data.get(i).value(UserID);
-				int filmID = (int)data.get(i).value(ItemID);
-				float rating = (float)data.get(i).value(Rating);
-				
-				User userInstance = users.get(userID);
-				if (userInstance == null) {
-					userInstance = new User(userID);
-				}
-				
-			Film filmInstance = films.get(filmID);
-				if (filmInstance == null) {
-					filmInstance = new Film(filmID);
-				}
-				
-				userInstance.ratedFilms.put(filmInstance, rating);
-				userInstance.increaseMeanRating(rating);
-				
-				filmInstance.ratings.put(userInstance, rating);
-				users.put(userID,userInstance);
-				films.put(filmID,filmInstance);
-			}
+			UserID = data.attribute("UserID");
+			ItemID = data.attribute("ItemID");
+			Rating = data.attribute("Rating");
+			size = data.size();
+			
+			Functions.calculateMeanRatings();
+			Functions.calculateSimilarities();
+			Functions.calculatePredictions();
 			
 			PrintWriter output = new PrintWriter("ratingPredictions.txt", "UTF-8");
-			for (int i : users.keySet()) {
-				for (int j : films.keySet()) {
-					if (!users.get(i).ratedFilms.containsKey(films.get(j))) {
-						output.println(
-								i + ","
-								+ j + ","
-								+ users.get(i).getPredictedRating(films.get(j))
-						);
+			for (int i = 1; i <= NUMBER_OF_USERS; i++) {
+				for (int j = 1; j <= NUMBER_OF_FILMS; j++) {
+					if (predictions[i][j] != 0) {
+						output.println(i+","+j+","+predictions[i][j]);
 					}
 				}
 			}
 			output.close();
 		}
-		catch (Exception e1) {
-			e1.printStackTrace();
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
