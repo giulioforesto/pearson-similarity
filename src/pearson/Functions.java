@@ -37,13 +37,15 @@ public class Functions {
 				}
 			}
 			for (int j = userID; j <= Pearson.NUMBER_OF_USERS; j++) {
-				Pearson.similarities[j][userID] +=
-						(rating - Pearson.meanRatings[userID])
-						*(Pearson.filmSets[filmID][j] - Pearson.meanRatings[j]);
-				Pearson.simDenominator[userID][j] +=
-						Math.pow(rating - Pearson.meanRatings[userID], 2);
-				Pearson.simDenominator[j][userID] +=
-						Math.pow(rating - Pearson.meanRatings[j], 2);
+				if (Pearson.filmSets[filmID][j] != 0) {
+					Pearson.similarities[j][userID] +=
+							(rating - Pearson.meanRatings[userID])
+							*(Pearson.filmSets[filmID][j] - Pearson.meanRatings[j]);
+					Pearson.simDenominator[userID][j] +=
+							Math.pow(rating - Pearson.meanRatings[userID], 2);
+					Pearson.simDenominator[j][userID] +=
+							Math.pow(rating - Pearson.meanRatings[j], 2);
+				}
 			}
 		}
 		
