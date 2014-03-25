@@ -33,7 +33,8 @@ public class Functions {
 					Pearson.simDenominator[userID][j] +=
 							Math.pow(rating - Pearson.meanRatings[userID], 2);
 					Pearson.simDenominator[j][userID] +=
-							Math.pow(rating - Pearson.meanRatings[j], 2);
+							Math.pow(Pearson.filmSets[filmID][j]
+									- Pearson.meanRatings[j], 2);
 				}
 			}
 			for (int j = userID; j <= Pearson.NUMBER_OF_USERS; j++) {
@@ -44,7 +45,8 @@ public class Functions {
 					Pearson.simDenominator[userID][j] +=
 							Math.pow(rating - Pearson.meanRatings[userID], 2);
 					Pearson.simDenominator[j][userID] +=
-							Math.pow(rating - Pearson.meanRatings[j], 2);
+							Math.pow(Pearson.filmSets[filmID][j]
+									- Pearson.meanRatings[j], 2);
 				}
 			}
 		}
