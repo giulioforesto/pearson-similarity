@@ -60,24 +60,23 @@ public class Functions {
 	}
 	
 	public static void calculatePredictions() {
+		for (int i = 0; i <= Pearson.NUMBER_OF_USERS; i++) {
+			for (int j = 0; j <= Pearson.NUMBER_OF_FILMS; j++) {
+				Pearson.predictions[i][j] = Pearson.meanRatings[i];
+			}
+		}
 		for (int i = 0; i < Pearson.size; i++) {
 			int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
 			int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
 			float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
 			
 			for (int j = 1; j < userID; j++) {
-				if (Pearson.predictions[j][filmID] == 0) {
-					Pearson.predictions[j][filmID] = Pearson.meanRatings[j];
-				}
 				if (Pearson.filmSets[filmID][j] == 0) {
 					Pearson.predictions[j][filmID] += Pearson.similarities[userID][j]
 							*(rating - Pearson.meanRatings[userID]);
 				}
 			}
 			for (int j = userID; j <= Pearson.NUMBER_OF_USERS; j++) {
-				if (Pearson.predictions[j][filmID] == 0) {
-					Pearson.predictions[j][filmID] = Pearson.meanRatings[j];
-				}
 				if (Pearson.filmSets[filmID][j] == 0) {
 					Pearson.predictions[j][filmID] += Pearson.similarities[j][userID]
 							*(rating - Pearson.meanRatings[userID]);
