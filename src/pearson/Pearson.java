@@ -11,6 +11,10 @@ public class Pearson {
 	
 	// Set data volume version: "100k", "1M" or "10M"
 	public static String VOLUME = "1M";
+	// Set mode: "su" (single user) or "all"
+	// If mode == "su", set user
+	public static String MODE = "su";
+	public static int USER = 15;
 	
 	public static String FILE = "DataALL" + VOLUME + ".arff";
 	public static int NUMBER_OF_USERS = Functions.getData("users", VOLUME);
@@ -26,9 +30,8 @@ public class Pearson {
 	public static float[] meanRatings = new float[NUMBER_OF_USERS+1];
 	public static int[] cardinals = new int[NUMBER_OF_USERS+1];
 	public static float[][] filmSets = new float[NUMBER_OF_FILMS+1][NUMBER_OF_USERS+1];
-	public static float[][] similarities = new float[NUMBER_OF_USERS+1][NUMBER_OF_USERS+1];
-	public static float[][] simDenominator = new float[NUMBER_OF_USERS+1][NUMBER_OF_USERS+1];
-	public static float[][] predictions = new float[NUMBER_OF_USERS+1][NUMBER_OF_FILMS+1];
+	
+	public static long startTime;
 	
 	public static void main(String[] args) {
 		try {
@@ -40,34 +43,21 @@ public class Pearson {
 			Rating = data.attribute("Rating");
 			size = data.size();
 			
-			long startTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 			
 			Functions.calculateMeanRatings();
 			System.out.println("Calculated mean ratings after "
 					+ (System.currentTimeMillis()-startTime)/1000
 					+ " s");
-			Functions.calculateSimilarities();
-			System.out.println("Calculated similarities after "
-					+ (System.currentTimeMillis()-startTime)/1000
-					+ " s");
-			Functions.calculatePredictions();
-			System.out.println("Calculated predictions after "
-					+ (System.currentTimeMillis()-startTime)/1000
-					+ " s");
 			
-			PrintWriter output = new PrintWriter("ratingPredictions.txt", "UTF-8");
-			for (int i = 1; i <= NUMBER_OF_USERS; i++) {
-				for (int j = 1; j <= NUMBER_OF_FILMS; j++) {
-					if (predictions[i][j] != 0) {
-						output.println(i + "," + j + "," + predictions[i][j]);
-					}
-				}
+			if (MODE == "all") {
+				Functions.all all = new Functions.all();
+				all.execute();
 			}
-			output.println(
-					"Executed in: "
-					+ (System.currentTimeMillis()-startTime)/1000
-					+ " s");
-			output.close();
+			else if (MODE == "su") {
+				Functions.su su = new Functions.su();
+				su.execute();
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
