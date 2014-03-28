@@ -8,18 +8,15 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 
 public class Pearson {	
+	
+	// Set data volume version: "100k", "1M" or "10M"
+	public static String VOLUME = "1M";
+	
+	public static String FILE = "DataALL" + VOLUME + ".arff";
+	public static int NUMBER_OF_USERS = Functions.getData("users", VOLUME);
+	public static int NUMBER_OF_FILMS = Functions.getData("films", VOLUME);;
+	
 	public static Instances data;
-	
-	/*
-	 * DATA		NUMBER_OF_USERS	NUMBER_OF_FILMS
-	 * 100k		943				1682
-	 * 1M		6040			3952
-	 * 10M
-	 */
-	
-	public static String FILE = "DataALL1M.arff";
-	public static int NUMBER_OF_USERS = 6040;
-	public static int NUMBER_OF_FILMS = 3952;
 	
 	public static int size;
 	public static Attribute UserID;

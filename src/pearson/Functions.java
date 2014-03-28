@@ -2,6 +2,33 @@ package pearson;
 
 public class Functions {
 	
+	/*
+	 * DATA		NUMBER_OF_USERS	NUMBER_OF_FILMS
+	 * 100k		943				1682
+	 * 1M		6040			3952
+	 * 10M
+	 */
+	
+	public static int getData(String type, String volume) {
+		switch (volume) {
+		case "100k":
+			if (type == "users") {
+				return 943;
+			}
+			else if (type == "films") {
+				return 1682;
+			}
+		case "1M":
+			if (type == "users") {
+				return 6040;
+			}
+			else if (type == "films") {
+				return 3952;
+			}
+		}
+		return 0;
+	}
+	
 	public static void calculateMeanRatings() {
 		for (int i = 0; i < Pearson.size; i++) {
 			int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
