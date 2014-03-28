@@ -49,9 +49,9 @@ public class Functions {
 	}
 	
 	public static class all {
-		float[][] similarities = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
-		float[][] simDenominator = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
-		float[][] predictions = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_FILMS+1];
+		private float[][] similarities = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
+		private float[][] simDenominator = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
+		private float[][] predictions = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_FILMS+1];
 		
 		void calculateSimilarities() {
 			for (int i = 0; i < Pearson.size; i++) {
@@ -130,7 +130,7 @@ public class Functions {
 					+ " s");
 			
 			try {
-				PrintWriter output = new PrintWriter("ratingPredictions.txt", "UTF-8");
+				PrintWriter output = new PrintWriter("ratingPredictions2.txt", "UTF-8");
 				for (int i = 1; i <= Pearson.NUMBER_OF_USERS; i++) {
 					for (int j = 1; j <= Pearson.NUMBER_OF_FILMS; j++) {
 						if (predictions[i][j] != 0) {
@@ -151,7 +151,62 @@ public class Functions {
 	}
 	
 	public static class su {
+		
+		public su(int inputUser) {
+			this.user = inputUser;
+		}
+		
+		private int user;
+		
+		private float[] similarities = new float[Pearson.NUMBER_OF_USERS+1];
+
+		public float similarity(int y) {
+			float[] simDenominator = new float[2];
+			for (int i = 1; i <= Pearson.NUMBER_OF_FILMS; i++) {
+				if (Pearson.filmSets[i][y] != 0 && Pearson.filmSets[i][user] != 0) {
+					float xx =  Pearson.filmSets[i][user] - Pearson.meanRatings[user];
+					float yy =  Pearson.filmSets[i][y] - Pearson.meanRatings[y];
+					similarities[y] +=  xx*yy;
+					simDenominator[0] += Math.pow(xx,2);
+					simDenominator[1] += Math.pow(yy,2);
+				}
+			}
+			similarities[y] /= Math.sqrt(simDenominator[0])*Math.sqrt(simDenominator[1]);
+			return similarities[y]; 
+		}
+		
 		public void execute() {
+			float prediction = Pearson.meanRatings[user];
+			
+			try {
+				PrintWriter output = new PrintWriter("ratingPredictionsForUser" + user + ".txt", "UTF-8");
+				for (int i = 1; i <= Pearson.NUMBER_OF_FILMS; i++) {
+					if (Pearson.filmSets[i][user] == 0) {
+						for (int j = 1; j <= Pearson.NUMBER_OF_USERS; j++) {
+							if (Pearson.filmSets[i][j] != 0) {
+								if (similarities[j] != 0) {
+									prediction += similarities[j]
+											*(Pearson.filmSets[i][j] - Pearson.meanRatings[j]);
+								}
+								else {
+									prediction += similarity(j)
+											*(Pearson.filmSets[i][j] - Pearson.meanRatings[j]);
+								}
+							}
+						}
+						output.println(i + "," + prediction);
+						prediction = Pearson.meanRatings[user];
+					}
+				}
+				output.println(
+						"Executed in: "
+						+ (System.currentTimeMillis()-Pearson.startTime)/1000
+						+ " s");
+				output.close();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 		}
 	}

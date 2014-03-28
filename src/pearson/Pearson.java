@@ -5,7 +5,6 @@ import weka.core.Instances;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.PrintWriter;
 
 public class Pearson {	
 	
@@ -13,7 +12,7 @@ public class Pearson {
 	public static String VOLUME = "1M";
 	// Set mode: "su" (single user) or "all"
 	// If mode == "su", set user
-	public static String MODE = "su";
+	public static String MODE = "all";
 	public static int USER = 15;
 	
 	public static String FILE = "DataALL" + VOLUME + ".arff";
@@ -55,7 +54,7 @@ public class Pearson {
 				all.execute();
 			}
 			else if (MODE == "su") {
-				Functions.su su = new Functions.su();
+				Functions.su su = new Functions.su(USER);
 				su.execute();
 			}
 		}
