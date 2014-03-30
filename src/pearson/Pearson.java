@@ -9,10 +9,10 @@ import java.io.FileReader;
 public class Pearson {	
 	
 	// Set data volume version: "100k", "1M" or "10M"
-	public static String VOLUME = "1M";
+	public static String VOLUME = "10M";
 	// Set mode: "su" (single user) or "all"
 	// If mode == "su", set user
-	public static String MODE = "all";
+	public static String MODE = "su";
 	public static int USER = 15;
 	
 	public static String FILE = "DataALL" + VOLUME + ".arff";

@@ -12,4 +12,5 @@ ml-100k/
 *.arff
 *.csv
 *.txt
+*.dat
 .metadata/

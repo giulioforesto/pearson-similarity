@@ -8,7 +8,7 @@ public class Functions {
 	 * DATA		NUMBER_OF_USERS	NUMBER_OF_FILMS
 	 * 100k		943				1682
 	 * 1M		6040			3952
-	 * 10M
+	 * 10M		71567			10681
 	 */
 	
 	public static int getData(String type, String volume) {
@@ -26,6 +26,13 @@ public class Functions {
 			}
 			else if (type == "films") {
 				return 3952;
+			}
+		case "10M":
+			if (type == "users") {
+				return 71567;
+			}
+			else if (type == "films") {
+				return 10681;
 			}
 		}
 		return 0;
