@@ -38,6 +38,8 @@ public class Pearson {
 	
 	public static void main(String[] args) {
 		try {
+			startTime = System.currentTimeMillis();
+			
 			BufferedReader reader = new BufferedReader(new FileReader(FILE));
 			data = new Instances(reader);
 			reader.close();
@@ -46,7 +48,9 @@ public class Pearson {
 			Rating = data.attribute("Rating");
 			size = data.size();
 			
-			startTime = System.currentTimeMillis();
+			System.out.println("Initialized data after "
+					+ (System.currentTimeMillis()-Pearson.startTime)/1000
+					+ " s");
 			
 			if (MODE == "all") {
 				Functions.all all = new Functions.all();
@@ -56,6 +60,10 @@ public class Pearson {
 				Functions.su su = new Functions.su(USER);
 				su.execute();
 			}
+			
+			System.out.println("Executed in: "
+					+ (System.currentTimeMillis()-Pearson.startTime)/1000
+					+ " s");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

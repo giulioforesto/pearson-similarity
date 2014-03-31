@@ -8,7 +8,12 @@ public class Functions {
 	 * DATA		NUMBER_OF_USERS	NUMBER_OF_FILMS
 	 * 100k		943				1682
 	 * 1M		6040			3952
-	 * 10M		71567			10681
+	 * 10M		69878			10677
+	 * 
+	 * NUMBER_OF_FILMS for volume = 10M in README.html is correct but film numbers range from 1 to
+	 * 65133 with holes. Converter rename them from 1 to 10677.
+	 * NUMBER_OF_USERS for volume = 10M in README.html is incorrect: user number range from 1 to
+	 * 71567 with holes. Converter rename them from 1 to 69878.
 	 */
 	
 	public static int getData(String type, String volume) {
@@ -29,17 +34,17 @@ public class Functions {
 			}
 		case "10M":
 			if (type == "users") {
-				return 71567;
+				return 69878;
 			}
 			else if (type == "films") {
-				return 10681;
+				return 10677;
 			}
 		}
 		return 0;
 	}
 	
 	public static class all {
-		public static float[][] filmSets = new float[Pearson.NUMBER_OF_FILMS+1][Pearson.NUMBER_OF_USERS+1];
+		private float[][] filmSets = new float[Pearson.NUMBER_OF_FILMS+1][Pearson.NUMBER_OF_USERS+1];
 		private float[][] similarities = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
 		private float[][] simDenominator = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
 		private float[][] predictions = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_FILMS+1];
@@ -196,7 +201,7 @@ public class Functions {
 			}
 		}
 		
-		public void calculateSimilarities() {
+		void calculateSimilarities() {
 			for (int i = 0; i < Pearson.size; i++) {
 				int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
 				int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
@@ -232,8 +237,18 @@ public class Functions {
 			try {
 				PrintWriter output = new PrintWriter("ratingPredictionsForUser"
 						+ user + "at" + Pearson.VOLUME + ".txt", "UTF-8");
+				
+				System.out.println("Calculating and printing predictions...");
+				int progress = 0;
+				
 				for (int i = 1; i <= Pearson.NUMBER_OF_FILMS; i++) {
 					if (userRatings[i] == 0) {
+						int realProgress = i*100/Pearson.NUMBER_OF_FILMS;
+						if (realProgress > progress) {
+							progress = realProgress;
+							System.out.println("Calculating and printing predictions... "
+									+ progress + "%");
+						}
 						for (int j = 0; j < Pearson.size; j++) {
 							int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
 							if (filmID == i) {
