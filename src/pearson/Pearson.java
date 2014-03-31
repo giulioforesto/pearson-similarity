@@ -5,8 +5,12 @@ import weka.core.Instances;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Pearson {	
+	
+	public static Set<Float> f = new HashSet<Float>();
 	
 	// Set data volume version: "100k", "1M" or "10M"
 	public static String VOLUME = "10M";
@@ -28,7 +32,7 @@ public class Pearson {
 	
 	public static float[] meanRatings = new float[NUMBER_OF_USERS+1];
 	public static int[] cardinals = new int[NUMBER_OF_USERS+1];
-	public static float[][] filmSets = new float[NUMBER_OF_FILMS+1][NUMBER_OF_USERS+1];
+	
 	
 	public static long startTime;
 	
@@ -43,11 +47,6 @@ public class Pearson {
 			size = data.size();
 			
 			startTime = System.currentTimeMillis();
-			
-			Functions.calculateMeanRatings();
-			System.out.println("Calculated mean ratings after "
-					+ (System.currentTimeMillis()-startTime)/1000
-					+ " s");
 			
 			if (MODE == "all") {
 				Functions.all all = new Functions.all();

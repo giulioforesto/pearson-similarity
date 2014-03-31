@@ -38,27 +38,28 @@ public class Functions {
 		return 0;
 	}
 	
-	public static void calculateMeanRatings() {
-		for (int i = 0; i < Pearson.size; i++) {
-			int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
-			int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
-			float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
-			
-			Pearson.meanRatings[userID] += rating;
-			Pearson.cardinals[userID]++; 
-			
-			Pearson.filmSets[filmID][userID] = rating;
-		}
-		
-		for (int i = 1; i <= Pearson.NUMBER_OF_USERS; i++) {
-			Pearson.meanRatings[i] /= Pearson.cardinals[i];
-		}
-	}
-	
 	public static class all {
+		public static float[][] filmSets = new float[Pearson.NUMBER_OF_FILMS+1][Pearson.NUMBER_OF_USERS+1];
 		private float[][] similarities = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
 		private float[][] simDenominator = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_USERS+1];
 		private float[][] predictions = new float[Pearson.NUMBER_OF_USERS+1][Pearson.NUMBER_OF_FILMS+1];
+		
+		void calculateMeanRatings() {
+			for (int i = 0; i < Pearson.size; i++) {
+				int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
+				int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
+				float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
+				
+				Pearson.meanRatings[userID] += rating;
+				Pearson.cardinals[userID]++; 
+				
+				filmSets[filmID][userID] = rating;
+			}
+			
+			for (int i = 1; i <= Pearson.NUMBER_OF_USERS; i++) {
+				Pearson.meanRatings[i] /= Pearson.cardinals[i];
+			}
+		}
 		
 		void calculateSimilarities() {
 			for (int i = 0; i < Pearson.size; i++) {
@@ -67,26 +68,26 @@ public class Functions {
 				float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
 				
 				for (int j = 1; j < userID; j++) {
-					if (Pearson.filmSets[filmID][j] != 0) {
+					if (filmSets[filmID][j] != 0) {
 						similarities[userID][j] +=
 								(rating - Pearson.meanRatings[userID])
-								*(Pearson.filmSets[filmID][j] - Pearson.meanRatings[j]);
+								*(filmSets[filmID][j] - Pearson.meanRatings[j]);
 						simDenominator[userID][j] +=
 								Math.pow(rating - Pearson.meanRatings[userID], 2);
 						simDenominator[j][userID] +=
-								Math.pow(Pearson.filmSets[filmID][j]
+								Math.pow(filmSets[filmID][j]
 										- Pearson.meanRatings[j], 2);
 					}
 				}
 				for (int j = userID; j <= Pearson.NUMBER_OF_USERS; j++) {
-					if (Pearson.filmSets[filmID][j] != 0) {
+					if (filmSets[filmID][j] != 0) {
 						similarities[j][userID] +=
 								(rating - Pearson.meanRatings[userID])
-								*(Pearson.filmSets[filmID][j] - Pearson.meanRatings[j]);
+								*(filmSets[filmID][j] - Pearson.meanRatings[j]);
 						simDenominator[userID][j] +=
 								Math.pow(rating - Pearson.meanRatings[userID], 2);
 						simDenominator[j][userID] +=
-								Math.pow(Pearson.filmSets[filmID][j]
+								Math.pow(filmSets[filmID][j]
 										- Pearson.meanRatings[j], 2);
 					}
 				}
@@ -112,13 +113,13 @@ public class Functions {
 				float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
 				
 				for (int j = 1; j < userID; j++) {
-					if (Pearson.filmSets[filmID][j] == 0) {
+					if (filmSets[filmID][j] == 0) {
 						predictions[j][filmID] += similarities[userID][j]
 								*(rating - Pearson.meanRatings[userID]);
 					}
 				}
 				for (int j = userID; j <= Pearson.NUMBER_OF_USERS; j++) {
-					if (Pearson.filmSets[filmID][j] == 0) {
+					if (filmSets[filmID][j] == 0) {
 						predictions[j][filmID] += similarities[j][userID]
 								*(rating - Pearson.meanRatings[userID]);
 					}
@@ -127,10 +128,16 @@ public class Functions {
 		}
 		
 		public void execute() {
+			calculateMeanRatings();
+			System.out.println("Calculated mean ratings after "
+					+ (System.currentTimeMillis()-Pearson.startTime)/1000
+					+ " s");
+			
 			calculateSimilarities();
 			System.out.println("Calculated similarities after "
 					+ (System.currentTimeMillis()-Pearson.startTime)/1000
 					+ " s");
+			
 			calculatePredictions();
 			System.out.println("Calculated predictions after "
 					+ (System.currentTimeMillis()-Pearson.startTime)/1000
@@ -165,40 +172,76 @@ public class Functions {
 		
 		private int user;
 		
+		private float[] userRatings = new float[Pearson.NUMBER_OF_FILMS+1];
 		private float[] similarities = new float[Pearson.NUMBER_OF_USERS+1];
+		private float[] simDenominatorX = new float[Pearson.NUMBER_OF_USERS+1];
+		private float[] simDenominatorY = new float[Pearson.NUMBER_OF_USERS+1];
 
-		public float similarity(int y) {
-			float[] simDenominator = new float[2];
-			for (int i = 1; i <= Pearson.NUMBER_OF_FILMS; i++) {
-				if (Pearson.filmSets[i][y] != 0 && Pearson.filmSets[i][user] != 0) {
-					float xx =  Pearson.filmSets[i][user] - Pearson.meanRatings[user];
-					float yy =  Pearson.filmSets[i][y] - Pearson.meanRatings[y];
-					similarities[y] +=  xx*yy;
-					simDenominator[0] += Math.pow(xx,2);
-					simDenominator[1] += Math.pow(yy,2);
+		void calculateMeanRatings() {
+			for (int i = 0; i < Pearson.size; i++) {
+				int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
+				int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
+				float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
+				
+				Pearson.meanRatings[userID] += rating;
+				Pearson.cardinals[userID]++; 
+				
+				if (userID == Pearson.USER) {
+					userRatings[filmID] = rating;
 				}
 			}
-			similarities[y] /= Math.sqrt(simDenominator[0])*Math.sqrt(simDenominator[1]);
-			return similarities[y]; 
+			
+			for (int i = 1; i <= Pearson.NUMBER_OF_USERS; i++) {
+				Pearson.meanRatings[i] /= Pearson.cardinals[i];
+			}
+		}
+		
+		public void calculateSimilarities() {
+			for (int i = 0; i < Pearson.size; i++) {
+				int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
+				int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
+				float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
+				
+				if (userRatings[filmID] != 0) {
+					float xx =  userRatings[filmID] - Pearson.meanRatings[user];
+					float yy =  rating - Pearson.meanRatings[userID];
+					similarities[userID] +=  xx*yy;
+					simDenominatorX[userID] += Math.pow(xx,2);
+					simDenominatorY[userID] += Math.pow(yy,2);
+				}
+			}
+			for (int i = 1; i <= Pearson.NUMBER_OF_USERS; i++) {
+				similarities[i] /= Math.sqrt(simDenominatorX[i])*Math.sqrt(simDenominatorY[i]);
+			}
 		}
 		
 		public void execute() {
+			
+			calculateMeanRatings();
+			System.out.println("Calculated mean ratings after "
+					+ (System.currentTimeMillis()-Pearson.startTime)/1000
+					+ " s");
+			
+			calculateSimilarities();
+			System.out.println("Calculated similarities after "
+					+ (System.currentTimeMillis()-Pearson.startTime)/1000
+					+ " s");
+			
 			float prediction = Pearson.meanRatings[user];
 			
 			try {
-				PrintWriter output = new PrintWriter("ratingPredictionsForUser" + user + ".txt", "UTF-8");
+				PrintWriter output = new PrintWriter("ratingPredictionsForUser"
+						+ user + "at" + Pearson.VOLUME + ".txt", "UTF-8");
 				for (int i = 1; i <= Pearson.NUMBER_OF_FILMS; i++) {
-					if (Pearson.filmSets[i][user] == 0) {
-						for (int j = 1; j <= Pearson.NUMBER_OF_USERS; j++) {
-							if (Pearson.filmSets[i][j] != 0) {
-								if (similarities[j] != 0) {
-									prediction += similarities[j]
-											*(Pearson.filmSets[i][j] - Pearson.meanRatings[j]);
-								}
-								else {
-									prediction += similarity(j)
-											*(Pearson.filmSets[i][j] - Pearson.meanRatings[j]);
-								}
+					if (userRatings[i] == 0) {
+						for (int j = 0; j < Pearson.size; j++) {
+							int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
+							if (filmID == i) {
+								int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
+								float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
+								
+								prediction += similarities[userID]
+											*(rating - Pearson.meanRatings[userID]);
 							}
 						}
 						output.println(i + "," + prediction);

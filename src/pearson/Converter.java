@@ -16,8 +16,8 @@ public class Converter {
 			output.println("@RELATION " + FILE_NAME + "\n");
 			output.println("@ATTRIBUTE UserID");
 			output.println("@ATTRIBUTE ItemID");
-			output.println("@ATTRIBUTE Rating\n");
-			output.println("@DATA");
+			output.println("@ATTRIBUTE Rating");
+			output.println("\n@DATA");
 			
 			String line;
 			while ((line = reader.readLine()) != null) {
