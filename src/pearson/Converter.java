@@ -30,7 +30,7 @@ public class Converter {
 			 * For 10M file, Films and Users numbers have holes.
 			 * The highest film number is 65133.
 			 * The highest user number is 71567.
-			 * The actual cardinals are:
+			 * The real cardinals are:
 			 * * films: 10677
 			 * * users: 69878
 			 */
