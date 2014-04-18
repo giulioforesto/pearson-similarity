@@ -250,10 +250,10 @@ public class Functions {
 									+ progress + "%");
 						}
 						for (int j = 0; j < Pearson.size; j++) {
-							int filmID = (int)Pearson.data.get(i).value(Pearson.ItemID);
+							int filmID = (int)Pearson.data.get(j).value(Pearson.ItemID);
 							if (filmID == i) {
-								int userID = (int)Pearson.data.get(i).value(Pearson.UserID);
-								float rating = (float)Pearson.data.get(i).value(Pearson.Rating);
+								int userID = (int)Pearson.data.get(j).value(Pearson.UserID);
+								float rating = (float)Pearson.data.get(j).value(Pearson.Rating);
 								
 								prediction += similarities[userID]
 											*(rating - Pearson.meanRatings[userID]);
